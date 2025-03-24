@@ -1,10 +1,13 @@
-import { Router } from "express";
-import { signupController } from "../../controller/userControllers/signup.controller.js";
-import { signinController } from "../../controller/userControllers/signin.controller.js";
-
+import { Router } from 'express';
+import { authMiddleware } from '../../middleware/auth/authMiddleware.js';
+import { signupController } from '../../controller/userControllers/signup.controller.js';
+import { signinController } from '../../controller/userControllers/signin.controller.js';
+import { logoutController } from '../../controller/userControllers/logout.controller.js';
 const router = Router();
 
-router.post("/signup", signupController);
-router.post("/signin", signinController);
+// Public routes
+router.post('/register', signupController);  // Signup route
+router.post('/login', signinController);     // Signin route
+router.post('/logout', authMiddleware, logoutController);  // Logout route (protected)
 
 export default router;
