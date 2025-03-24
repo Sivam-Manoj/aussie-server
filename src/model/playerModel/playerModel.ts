@@ -1,10 +1,11 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, model, Document } from "mongoose";
 
 // Define an interface for TypeScript type safety
 interface IPlayer extends Document {
   _id: string;
   photo: string; // Image path
   fullName: string;
+  user?: mongoose.Types.ObjectId; // Add user field
   nickname: string;
   email: string;
   mobilePhone: string;
@@ -12,46 +13,46 @@ interface IPlayer extends Document {
   height: number; // cm or inches
   weight: number; // kg or lbs
   startedPlaying: Date;
-  preferredFoot: 'Left' | 'Right' | 'Both';
-  preferredHandball: 'Left' | 'Right' | 'Both';
-  preferredTap: 'Left' | 'Right' | 'Both' | 'Neither';
+  preferredFoot: "Left" | "Right" | "Both";
+  preferredHandball: "Left" | "Right" | "Both";
+  preferredTap: "Left" | "Right" | "Both" | "Neither";
   primaryPosition:
-    | 'Forward'
-    | 'Midfield'
-    | 'Defender'
-    | 'Ruck'
-    | 'Utility'
-    | 'Winger'
-    | 'Tagger'
-    | 'Bench'
-    | 'Other';
-  secondaryPosition: IPlayer['primaryPosition'];
-  preferredPosition: IPlayer['primaryPosition'];
+    | "Forward"
+    | "Midfield"
+    | "Defender"
+    | "Ruck"
+    | "Utility"
+    | "Winger"
+    | "Tagger"
+    | "Bench"
+    | "Other";
+  secondaryPosition: IPlayer["primaryPosition"];
+  preferredPosition: IPlayer["primaryPosition"];
   playingStyle:
-    | 'Aggressive'
-    | 'Strategic'
-    | 'Balanced'
-    | 'Defensive'
-    | 'Attacking'
-    | 'Playmaker'
-    | 'Reactive'
-    | 'Cautious'
-    | 'Other';
+    | "Aggressive"
+    | "Strategic"
+    | "Balanced"
+    | "Defensive"
+    | "Attacking"
+    | "Playmaker"
+    | "Reactive"
+    | "Cautious"
+    | "Other";
   currentClub: string;
   previousClubs: string[];
   yearsOfExperience: number;
   gamesPlayed: number;
   goalsKicked: number;
   aspirations:
-    | 'Social Player'
-    | 'Club Player'
-    | 'Professional'
-    | 'Elite Athlete'
-    | 'Fitness Aspect'
-    | 'Personal Development'
-    | 'Mental Activity'
-    | 'Financial Requirement'
-    | 'Other';
+    | "Social Player"
+    | "Club Player"
+    | "Professional"
+    | "Elite Athlete"
+    | "Fitness Aspect"
+    | "Personal Development"
+    | "Mental Activity"
+    | "Financial Requirement"
+    | "Other";
   achievements: string[];
   injuryHistory: string;
   socialMediaLinks?: {
@@ -60,7 +61,7 @@ interface IPlayer extends Document {
     linkedin?: string;
     whatsapp?: string;
   };
-  playerProfile: 'Public' | 'Private';
+  playerProfile: "Public" | "Private";
   biography: string;
 }
 
@@ -69,6 +70,7 @@ const playerSchema = new Schema<IPlayer>(
   {
     photo: { type: String, required: false },
     fullName: { type: String, required: true },
+    user: { type: mongoose.Types.ObjectId, ref: "User" },
     nickname: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     mobilePhone: { type: String, required: true, unique: true },
@@ -78,76 +80,76 @@ const playerSchema = new Schema<IPlayer>(
     startedPlaying: { type: Date, required: true },
     preferredFoot: {
       type: String,
-      enum: ['Left', 'Right', 'Both'],
+      enum: ["Left", "Right", "Both"],
       required: true,
     },
     preferredHandball: {
       type: String,
-      enum: ['Left', 'Right', 'Both'],
+      enum: ["Left", "Right", "Both"],
       required: true,
     },
     preferredTap: {
       type: String,
-      enum: ['Left', 'Right', 'Both', 'Neither'],
+      enum: ["Left", "Right", "Both", "Neither"],
       required: true,
     },
     primaryPosition: {
       type: String,
       enum: [
-        'Forward',
-        'Midfield',
-        'Defender',
-        'Ruck',
-        'Utility',
-        'Winger',
-        'Tagger',
-        'Bench',
-        'Other',
+        "Forward",
+        "Midfield",
+        "Defender",
+        "Ruck",
+        "Utility",
+        "Winger",
+        "Tagger",
+        "Bench",
+        "Other",
       ],
       required: true,
     },
     secondaryPosition: {
       type: String,
       enum: [
-        'Forward',
-        'Midfield',
-        'Defender',
-        'Ruck',
-        'Utility',
-        'Winger',
-        'Tagger',
-        'Bench',
-        'Other',
+        "Forward",
+        "Midfield",
+        "Defender",
+        "Ruck",
+        "Utility",
+        "Winger",
+        "Tagger",
+        "Bench",
+        "Other",
       ],
       required: true,
     },
     preferredPosition: {
       type: String,
       enum: [
-        'Forward',
-        'Midfield',
-        'Defender',
-        'Ruck',
-        'Utility',
-        'Winger',
-        'Tagger',
-        'Bench',
-        'Other',
+        "Forward",
+        "Midfield",
+        "Defender",
+        "Ruck",
+        "Utility",
+        "Winger",
+        "Tagger",
+        "Bench",
+        "Other",
       ],
       required: true,
     },
     playingStyle: {
       type: String,
       enum: [
-        'Aggressive',
-        'Strategic',
-        'Balanced',
-        'Defensive',
-        'Attacking',
-        'Playmaker',
-        'Reactive',
-        'Cautious',
-        'Other',
+        "Aggressive",
+        "Strategic",
+        "Balanced",
+        "Defensive",
+        "Attacking",
+        "Playmaker",
+        "Reactive",
+        "Cautious",
+        "Other",
       ],
       required: true,
     },
@@ -159,15 +161,15 @@ const playerSchema = new Schema<IPlayer>(
     aspirations: {
       type: String,
       enum: [
-        'Social Player',
-        'Club Player',
-        'Professional',
-        'Elite Athlete',
-        'Fitness Aspect',
-        'Personal Development',
-        'Mental Activity',
-        'Financial Requirement',
-        'Other',
+        "Social Player",
+        "Club Player",
+        "Professional",
+        "Elite Athlete",
+        "Fitness Aspect",
+        "Personal Development",
+        "Mental Activity",
+        "Financial Requirement",
+        "Other",
       ],
       required: true,
     },
@@ -181,7 +183,7 @@ const playerSchema = new Schema<IPlayer>(
     },
     playerProfile: {
       type: String,
-      enum: ['Public', 'Private'],
+      enum: ["Public", "Private"],
       required: true,
     },
     biography: { type: String, required: false },
@@ -190,5 +192,5 @@ const playerSchema = new Schema<IPlayer>(
 );
 
 // Create and export the model
-const Player = model<IPlayer>('Player', playerSchema);
+const Player = model<IPlayer>("Player", playerSchema);
 export default Player;

@@ -1,5 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import { Schema, model, Document } from "mongoose";
+import bcrypt from "bcryptjs";
 
 // Define an interface for the User Document
 interface IUser extends Document {
@@ -10,6 +10,8 @@ interface IUser extends Document {
   email: string;
   password: string;
   isVerified: boolean;
+  verificationCode: string;
+  verificationCodeExpiresAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -22,13 +24,15 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true, minlength: 6 },
     isVerified: { type: Boolean, default: false },
+    verificationCode: { type: String, required: false },
+    verificationCodeExpiresAt: { type: Date, required: false },
   },
   { timestamps: true }
 );
 
 // 🔒 Hash password before saving
-userSchema.pre<IUser>('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre<IUser>("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -43,6 +47,6 @@ userSchema.methods.comparePassword = async function (
 };
 
 // Create User model
-const User = model<IUser>('User', userSchema);
+const User = model<IUser>("User", userSchema);
 
 export default User;

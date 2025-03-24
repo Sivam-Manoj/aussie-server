@@ -1,11 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../../model/userModel/userModel.js';
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import User from "../../model/userModel/userModel.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'; // Use env variable in production
-
-interface AuthRequest extends Request {
-  user?: { _id: string; email: string; isVerified: boolean }; // Extend request type to include user
+export interface AuthRequest extends Request {
+  user?: { _id: string; email: string; isVerified: boolean };
 }
 
 export const authMiddleware = async (
@@ -14,38 +12,40 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const token = req.cookies.jwt || req.headers.authorization?.split(' ')[1]; // Get token from cookie or Authorization header
+    let token = req.cookies?.jwt || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       return res
         .status(401)
-        .json({ message: 'Unauthorized: No token provided' });
+        .json({ message: "Unauthorized: No token provided" });
     }
 
     // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       _id: string;
       email: string;
       isVerified: boolean;
     };
 
-    // ✅ Fetch user from DB (AWAIT is necessary!)
-    const user = await User.findById(decoded._id);
+    // Fetch user from database
+    const user = await User.findOne({ email: decoded.email });
 
     if (!user) {
-      return res.status(404).json({ message: 'Access denied: User not found' });
+      return res.status(404).json({ message: "Access denied: User not found" });
     }
 
+    // Attach user data to request
     req.user = {
       _id: user._id.toString(),
       email: user.email,
       isVerified: user.isVerified,
-    }; // Attach user data to request
+    };
 
-    next(); // Proceed to the next middleware or route handler
+    next(); // Proceed to the next middleware
   } catch (error) {
+    console.error("❌ Authentication error:", error);
     return res
       .status(403)
-      .json({ message: 'Forbidden: Invalid or expired token' });
+      .json({ message: "Forbidden: Invalid or expired token" });
   }
 };

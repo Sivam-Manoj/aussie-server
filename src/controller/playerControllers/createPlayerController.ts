@@ -1,12 +1,13 @@
-import { Request, Response } from 'express';
-import { asyncHandler } from '../../middleware/asynchandler/asyncHandler.js';
-import Player from '../../model/playerModel/playerModel.js';
-import { playerRequiredFields } from './required/playerRequiredFields.js';
-import { upsertEmbedding } from '../../utils/chromadb/upsertChromaCollection.js';
-import { convertPlayerDataToText } from './convertPlayerDataToText/convertPlayerDataToText.js';
+import { Request, Response } from "express";
+import { asyncHandler } from "../../middleware/asynchandler/asyncHandler.js";
+import Player from "../../model/playerModel/playerModel.js";
+import { playerRequiredFields } from "./required/playerRequiredFields.js";
+import { upsertEmbedding } from "../../utils/chromadb/upsertChromaCollection.js";
+import { convertPlayerDataToText } from "./convertPlayerDataToText/convertPlayerDataToText.js";
+import { AuthRequest } from "../../middleware/auth/authMiddleware.js";
 
 export const createPlayerController = asyncHandler(
-  async (req: Request, res: Response): Promise<any> => {
+  async (req: AuthRequest, res: Response): Promise<any> => {
     try {
       // Validate required fields
       const missingFields = playerRequiredFields.filter(
@@ -15,7 +16,7 @@ export const createPlayerController = asyncHandler(
 
       if (missingFields.length > 0) {
         throw new Error(
-          `Validation Error: Missing fields - ${missingFields.join(', ')}`
+          `Validation Error: Missing fields - ${missingFields.join(", ")}`
         );
       }
 
@@ -51,11 +52,12 @@ export const createPlayerController = asyncHandler(
 
       // Check if the player already exists
       const existingPlayer = await Player.findOne({ email });
+      const userId = req.user?._id as string;
 
       if (existingPlayer) {
         return res
           .status(409)
-          .json({ message: 'Player with this email already exists' });
+          .json({ message: "Player with this email already exists" });
       }
 
       // Create a new player
@@ -64,6 +66,7 @@ export const createPlayerController = asyncHandler(
         fullName,
         nickname,
         email,
+        user: userId,
         mobilePhone,
         dob,
         height,
@@ -93,18 +96,21 @@ export const createPlayerController = asyncHandler(
       const savedPlayer = await newPlayer.save();
 
       const playerTextData = convertPlayerDataToText(savedPlayer);
-      const playerId = String(savedPlayer._id).toString();
 
       // 🔹 Upsert full player text data into ChromaDB for AI analysis
-      await upsertEmbedding(playerTextData, { playerId }, playerId);
+      await upsertEmbedding(
+        playerTextData,
+        { userId, email, fullName },
+        userId
+      );
 
       res.status(201).json({
-        message: 'Player created successfully',
+        message: "Player created successfully",
         player: savedPlayer,
       });
     } catch (error: any) {
       res.status(500).json({
-        message: 'Internal Server Error When Creating a Player',
+        message: "Internal Server Error When Creating a Player",
         error: error.message,
       });
     }

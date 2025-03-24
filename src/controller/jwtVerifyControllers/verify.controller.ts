@@ -1,39 +1,34 @@
-import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../../model/userModel/userModel.js';
-import { createJwtToken } from '../../utils/jwt/createToken.js';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
-const REFRESH_SECRET = process.env.REFRESH_SECRET || 'your_refresh_secret_key'; // Separate secret for refresh token
+import { Request, Response } from "express";
+import User from "../../model/userModel/userModel.js";
+import { createJwtToken } from "../../utils/jwt/createToken.js";
 
 export const verifyController = async (
   req: Request,
   res: Response
-): Promise<Response> => {
-  const { verificationToken } = req.body; // This will be the JWT sent by the user
+): Promise<any> => {
+  const { verificationCode } = req.body; // This will be the JWT sent by the user
 
-  if (!verificationToken) {
+  if (!verificationCode) {
     return res
       .status(400)
-      .json({ message: 'Please provide verification token' });
+      .json({ message: "Please provide verification token" });
   }
 
   try {
     // Verify the JWT token
-    const decoded = jwt.verify(verificationToken, JWT_SECRET) as {
-      email: string;
-    };
-
-    // Find the user by email from the decoded JWT payload
-    const user = await User.findOne({ email: decoded.email });
+    const user = await User.findOne({ verificationCode });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Check if the verification code has expired
+    if (Date.now() > user.verificationCodeExpiresAt.getTime()) {
+      return res.status(400).json({ message: "Verification code expired" });
     }
 
     // If user is already verified, return a message
     if (user.isVerified) {
-      return res.status(400).json({ message: 'User is already verified' });
+      return res.status(400).json({ message: "User is already verified" });
     }
 
     // Mark the user as verified
@@ -41,24 +36,25 @@ export const verifyController = async (
     await user.save();
 
     // Create the access token and refresh token
+    // Create the access token and refresh token
     const { accessToken, refreshToken } = createJwtToken(res, {
-      _id: user._id,
+      _id: user.id,
       email: user.email,
       firstName: user.firstName,
-      lastName: user.lastName,
+      lastName: user.lastName, // ✅ Add this field
       isVerified: user.isVerified,
     });
 
     // Return the success response with both access token and refresh token
     return res.status(200).json({
-      message: 'User verified successfully',
+      message: "User verified successfully",
       accessToken,
       refreshToken, // Send the refresh token along with the access token
     });
   } catch (error) {
-    console.error('Error verifying token:', error);
+    console.error("Error verifying token:", error);
     return res
       .status(400)
-      .json({ message: 'Invalid or expired verification token' });
+      .json({ message: "Invalid or expired verification token" });
   }
 };
