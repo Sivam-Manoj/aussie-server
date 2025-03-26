@@ -32,7 +32,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // Enable Cross-Origin Resource Sharing (CORS)
 // CORS allows resources to be shared between different domains, which is important for APIs to be accessed from different origins.
-app.use(cors());
+const corsOptions = {
+    origin: ['http://example.com', 'http://localhost:3000'],  // specify allowed origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],  // allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'],  // allowed headers
+    credentials: true,  // allow credentials (cookies, authorization headers, etc.)
+    preflightContinue: false,  // pass the CORS preflight request to the next handler
+    optionsSuccessStatus: 204,  // status code for successful preflight response
+};
+
+app.use(cors(corsOptions));
+
 
 // Verification routes (API endpoints)
 // Here, we are defining the `/security` base route and telling Express to route incoming req toverifyRoutes  file.
