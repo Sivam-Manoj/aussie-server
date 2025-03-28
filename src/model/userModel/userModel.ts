@@ -12,6 +12,7 @@ interface IUser extends Document {
   isVerified: boolean;
   verificationCode: string;
   verificationCodeExpiresAt: Date;
+  isProfileDone: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -26,6 +27,7 @@ const userSchema = new Schema<IUser>(
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: String, required: false },
     verificationCodeExpiresAt: { type: Date, required: false },
+    isProfileDone: { type: Boolean, required: false, default: false },
   },
   { timestamps: true }
 );

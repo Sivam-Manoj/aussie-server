@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../middleware/asynchandler/asyncHandler.js";
 import User from "../../model/userModel/userModel.js";
-import { sendSmsVerification } from "../../utils/twilio/twilioSMS.js";
+// import { sendSmsVerification } from "../../utils/twilio/twilioSMS.js";
 import { sendEmailVerification } from "../../utils/twilio/twilioEmail.js";
 import { generateVerificationCode } from "../../utils/verificationCode/generateVerificationCode.js";
 import { VERIFICATION_CODE_EXPIRATION } from "../../utils/verificationCode/verificationTime.js";
 
 export const signupController = asyncHandler(
   async (req: Request, res: Response): Promise<any> => {
-    const { email, password, phone, firstName, lastName, verifyMethod } =
-      req.body;
+    const { email, password, phone, firstName, lastName } = req.body;
 
     if (!email || !password || !phone || !firstName || !lastName) {
       return res
@@ -20,10 +19,14 @@ export const signupController = asyncHandler(
     // Check if user already exists
     const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       return res
         .status(400)
         .json({ message: "User already registered, please login" });
+    }
+
+    if (existingUser && !existingUser.isVerified) {
+      return res.status(204).json({ isVerified: false });
     }
 
     try {
@@ -44,19 +47,12 @@ export const signupController = asyncHandler(
 
       await newUser.save();
 
-      // Send SMS and Email verification with the JWT token
-      if (verifyMethod == "phone") {
-        await sendSmsVerification(phone, verificationCode);
-      } else {
-        await sendEmailVerification(email, verificationCode);
-      }
+      await sendEmailVerification(email, verificationCode);
 
       return res.status(201).json({
-        message:
-          "User registered successfully. Please verify your email or phone.",
+        message: "User registered successfully. Please verify your email.",
       });
     } catch (error) {
-      console.error("Error during signup:", error);
       return res.status(500).json({ message: "Error during registration" });
     }
   }

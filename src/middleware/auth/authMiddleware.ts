@@ -77,17 +77,14 @@ export const authMiddleware = async (
               .json({ message: "Access denied: User not found" });
           }
 
-          // Generate new tokens
-          const { accessToken, refreshToken: newRefreshToken } = createJwtToken(
-            res,
-            {
-              _id: user._id.toString(),
-              email: user.email,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              isVerified: user.isVerified,
-            }
-          );
+          createJwtToken(res, {
+            _id: user._id.toString(),
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isVerified: user.isVerified,
+            isProfileDone: user.isProfileDone,
+          });
 
           // Attach user data to request
           req.user = {

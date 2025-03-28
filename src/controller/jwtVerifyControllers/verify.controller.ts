@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../model/userModel/userModel.js";
 import { createJwtToken } from "../../utils/jwt/createToken.js";
+import Player from "../../model/playerModel/playerModel.js";
 
 export const verifyController = async (
   req: Request,
@@ -35,21 +36,20 @@ export const verifyController = async (
     user.isVerified = true;
     await user.save();
 
-    // Create the access token and refresh token
-    // Create the access token and refresh token
-    const { accessToken, refreshToken } = createJwtToken(res, {
+    // Create the access token
+    const { accessToken } = createJwtToken(res, {
       _id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName, // ✅ Add this field
       isVerified: user.isVerified,
+      isProfileDone: user.isProfileDone,
     });
 
     // Return the success response with both access token and refresh token
     return res.status(200).json({
       message: "User verified successfully",
       accessToken,
-      refreshToken, // Send the refresh token along with the access token
     });
   } catch (error) {
     console.error("Error verifying token:", error);

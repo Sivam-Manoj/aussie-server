@@ -10,6 +10,7 @@ export const createJwtToken = (
     firstName: string;
     lastName: string;
     isVerified: boolean;
+    isProfileDone: boolean;
   }
 ) => {
   try {
