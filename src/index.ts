@@ -10,6 +10,7 @@ import playerRoutes from "./routes/playerRoutes/playerRoutes.js"; // player rout
 import userRoutes from "./routes/userRoutes/userRoutes.js"; //user routes
 //verification routes
 import verifyRoutes from "./routes/verificationRoutes/userVerificationRoutes.js";
+import path from "path";
 
 // Configure dotenv to retrieve keys from .env file
 // This makes sure that environment variables in the `.env` file are loaded into the process.
@@ -34,7 +35,6 @@ app.use(express.urlencoded({ extended: true }));
 // CORS allows resources to be shared between different domains, which is important for APIs to be accessed from different origins.
 const corsOptions = {
   origin: ["https://www.aussierulespro.com", "http://localhost:3000"], // specify allowed origins
-  methods: ["GET", "POST", "PUT", "DELETE"], // allowed HTTP methods
   credentials: true, // allow credentials (cookies, authorization headers, etc.)
 };
 
@@ -51,6 +51,22 @@ app.use("/player", playerRoutes);
 //User routes(API endpoints)
 // Here, we are defining the `/user` base route and telling Express to route all requests to `UserRoutes` file.
 app.use("/user", userRoutes);
+
+// Use process.cwd() to get the absolute path to the root of the project
+const rootPath = process.cwd(); // This will point to the project root
+
+// Path to the "views" folder and "index.html" file (relative to the project root)
+const viewsPath = path.join(rootPath, "views"); // This will correctly resolve the views folder
+
+const indexPath = path.join(viewsPath, "index.html");
+
+// Serve static files from the "views" folder
+app.use(express.static(viewsPath)); // Serve static files from views
+
+// Catch-all route for all other routes, send index.html
+app.get("*", (_req, res) => {
+  res.sendFile(indexPath); // Send the absolute path to the file
+});
 
 // Custom Error Handler
 // This is a custom middleware that catches any errors thrown in previous middlewares or routes

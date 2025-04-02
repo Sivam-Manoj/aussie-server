@@ -13,7 +13,6 @@ export const getOnePlayer = asyncHandler(
       }
       const userId = req.user?._id;
       const user = await Player.findOne({ user: userId });
-      console.log(user);
       res.status(200).json(user);
     } catch (error) {
       res.status(500).json({ message: "Server error", error });

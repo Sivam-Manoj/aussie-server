@@ -31,23 +31,25 @@ export const createJwtToken = (
     // Set access token in HTTP-only cookie
     res.cookie("jwt", accessToken, {
       httpOnly: true, // Prevents XSS attacks
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "strict", // CSRF protection
+      secure: process.env.NODE_ENV == "production", // HTTPS only in production
+      domain: "aussierulespro.com",
+      path: "/",
+      sameSite: "none", 
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     // Set refresh token in HTTP-only cookie
     res.cookie("refreshJwt", refreshToken, {
       httpOnly: true, // Prevents XSS attacks
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "strict", // CSRF protection
+      secure: process.env.NODE_ENV == "production", // HTTPS only in production
+      domain: "aussierulespro.com",
+      path: "/",
+      sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    console.log("✅ JWT Tokens created and sent.");
     return { accessToken, refreshToken }; // Optionally return the tokens
   } catch (error) {
-    console.error("❌ Error creating JWT tokens:", error);
     throw error; // Handle this in the route
   }
 };

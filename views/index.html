@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aussie Rules Pro</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      h1 {
+        font-size: 3em;
+        color: #2c3e50;
+        text-align: center;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #ecf0f1;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .container {
+        text-align: center;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      footer {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        font-size: 0.8em;
+        color: #7f8c8d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Aussie Rules Pro</h1>
+      <p>Your sports, your rules.</p>
+    </div>
+    <footer>
+      <p>Version 1.4.0 - Last update: <span id="last-update-time"></span></p>
+    </footer>
+
+    <script>
+      // Show last update time
+      const lastUpdate = new Date();
+      document.getElementById("last-update-time").innerText =
+        lastUpdate.toLocaleString();
+    </script>
+  </body>
+</html>

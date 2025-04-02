@@ -24,6 +24,7 @@ export const createPlayerController = asyncHandler(
           )}`,
         });
       }
+
       const { email, fullName } = req.body;
       const userId = req.user?._id as string;
 
@@ -73,26 +74,31 @@ export const createPlayerController = asyncHandler(
 
       // Mark user profile as complete
       const user = await User.findById(userId);
-      if (user) {
-        user.isProfileDone = true;
-        await user.save(); // Save user after updating
-        createJwtToken(res, {
-          _id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isVerified: user.isVerified,
-          isProfileDone: user.isProfileDone,
-        });
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
       }
+      user.isProfileDone = true;
+      await user.save(); // Save user after updating
 
-      res.status(201).json({
+      // Create the JWT token
+      const { accessToken } = createJwtToken(res, {
+        _id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isVerified: user.isVerified,
+        isProfileDone: user.isProfileDone,
+      });
+
+      // Return success response
+      return res.status(201).json({
         message: "Player created successfully",
         player: savedPlayer,
+        accessToken,
       });
     } catch (error: any) {
       console.error("Error creating player:", error);
-      res.status(500).json({
+      return res.status(500).json({
         message: "Internal Server Error When Creating a Player",
         error: error.message,
       });
