@@ -13,7 +13,7 @@ export const getPlayerController = asyncHandler(
     const userId = req.user?._id as string;
     try {
       const results = await searchIndex(search, userId);
-      res.status(200).json(results);
+      res.status(200).json({ message: results });
     } catch (error) {
       res.json(500).json({ message: "Internel Server Error" });
     }

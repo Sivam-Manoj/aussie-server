@@ -19,7 +19,7 @@ router.post(
 );
 
 // Route for getting all players (GET method should be used for data retrieval)
-router.get("/get", authMiddleware, getPlayerController);
+router.post("/chat", authMiddleware, getPlayerController);
 
 // Route for deleting a player
 router.post("/delete", authMiddleware, deletePlayerController);
