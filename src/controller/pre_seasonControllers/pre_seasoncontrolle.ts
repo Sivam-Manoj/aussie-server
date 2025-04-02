@@ -18,7 +18,6 @@ export const getAllPreSeason = async (req: Request, res: Response) => {
     const entries = await PreSeason.find().populate("playerId");
     res.status(200).json(entries);
   } catch (error) {
-    res.status(500).json({ message:error});
+    res.status(500).json({ message: error });
   }
 };
-

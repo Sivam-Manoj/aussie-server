@@ -6,16 +6,22 @@ export const rerankResults = async (
   results: string
 ): Promise<any> => {
   try {
-    const prompt = reRankPrompt(query, results);
+    const systemPrompt = reRankPrompt(results); // System-level reranking prompt
+    const userPrompt = query; // User's query
+
     const response = await openai.chat.completions.create({
-      model: "gpt-4.5-preview",
-      messages: [{ role: "system", content: prompt }],
-      temperature: 0.3, // Lower temperature for consistency
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.7, // Lower temperature for consistency
+      max_tokens: 16000,
     });
 
     const content = response.choices[0]?.message?.content?.trim();
 
-    if (!content) throw new Error("GPT-4 response is empty.");
+    if (!content) throw new Error("GPT response is empty.");
     return content;
   } catch (error) {
     return results; // Fallback to original results if reranking fails
