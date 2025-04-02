@@ -10,8 +10,8 @@ import playerRoutes from "./routes/playerRoutes/playerRoutes.js"; // player rout
 import userRoutes from "./routes/userRoutes/userRoutes.js"; //user routes
 //verification routes
 import verifyRoutes from "./routes/verificationRoutes/userVerificationRoutes.js";
+import pre_seasonRoutes from "./routes/pre_seasonRoutes/pre_seasonRoutes.js";
 import path from "path";
-
 // Configure dotenv to retrieve keys from .env file
 // This makes sure that environment variables in the `.env` file are loaded into the process.
 configDotenv();
@@ -72,6 +72,8 @@ app.get("*", (_req, res) => {
 // This is a custom middleware that catches any errors thrown in previous middlewares or routes
 // and handles them (like sending a proper error response back to the client).
 app.use(errorHandler);
+
+app.use("/api", pre_seasonRoutes);
 
 // Connect app with the database
 // This function connects the app to the database. It's usually where you'd set up your database connection.
