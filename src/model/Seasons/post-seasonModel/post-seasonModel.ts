@@ -2,7 +2,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IPostSeason extends Document {
-  userId: string;
+  userId: mongoose.Types.ObjectId;
+  playerId: mongoose.Types.ObjectId;
   gamesPlayed: number;
   trainingSessions: number;
   recoveryDays: number;
@@ -23,7 +24,8 @@ export interface IPostSeason extends Document {
 
 const PostSeasonSchema: Schema = new Schema(
   {
-    userId: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    playerId: { type: Schema.Types.ObjectId, ref: "Player", required: true },
     gamesPlayed: { type: Number, default: 0 },
     trainingSessions: { type: Number, default: 0 },
     recoveryDays: { type: Number, default: 0 },

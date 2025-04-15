@@ -10,8 +10,11 @@ import playerRoutes from "./routes/playerRoutes/playerRoutes.js"; // player rout
 import userRoutes from "./routes/userRoutes/userRoutes.js"; //user routes
 //verification routes
 import verifyRoutes from "./routes/verificationRoutes/userVerificationRoutes.js";
-import pre_seasonRoutes from "./routes/pre_seasonRoutes/pre_seasonRoutes.js";
 import path from "path";
+import inSeasonRoutes from "./routes/seasonsRoutes/in-seasonRoutes.js";
+import preSeasonRoutes from "./routes/seasonsRoutes/pre-seasonRoutes.js";
+import postSeasonRoutes from "./routes/seasonsRoutes/post-seasonRoutes.js";
+import offSeasonRoutes from "./routes/seasonsRoutes/off-seasonRoutes.js";
 // Configure dotenv to retrieve keys from .env file
 // This makes sure that environment variables in the `.env` file are loaded into the process.
 configDotenv();
@@ -73,8 +76,10 @@ app.get("*", (_req, res) => {
 // and handles them (like sending a proper error response back to the client).
 app.use(errorHandler);
 
-app.use("/api", pre_seasonRoutes);
-
+app.use('/in-season', inSeasonRoutes);
+app.use('/pre-season', preSeasonRoutes);
+app.use('/post-season', postSeasonRoutes);
+app.use('/off-season', offSeasonRoutes);
 // Connect app with the database
 // This function connects the app to the database. It's usually where you'd set up your database connection.
 // It's typically called after setting up routes and middlewares to ensure database is connected before handling any requests.

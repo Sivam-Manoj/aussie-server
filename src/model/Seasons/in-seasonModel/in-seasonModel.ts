@@ -14,6 +14,7 @@ interface PerformanceMetric {
 }
 
 export interface IInSeason extends Document {
+  userId: mongoose.Schema.Types.ObjectId;
   playerId: mongoose.Schema.Types.ObjectId;
   season: string;
   startDate: Date;
@@ -27,7 +28,8 @@ export interface IInSeason extends Document {
 
 const InSeasonSchema = new Schema<IInSeason>(
   {
-    playerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    playerId: { type: Schema.Types.ObjectId, ref: "Player", required: true },
     season: { type: String, required: true }, // Example: "in-season"
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },

@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IOffSeasonPlan extends Document {
   userId: mongoose.Types.ObjectId;
+  playerId: mongoose.Types.ObjectId;
   season: 'off-season';
   startDate: Date;
   endDate: Date;
@@ -23,6 +24,7 @@ export interface IOffSeasonPlan extends Document {
 const OffSeasonPlanSchema: Schema = new Schema(
   {
     userId: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+    playerId: { type: mongoose.Types.ObjectId, required: true, ref: 'Player' },
     season: { type: String, default: 'off-season' },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },

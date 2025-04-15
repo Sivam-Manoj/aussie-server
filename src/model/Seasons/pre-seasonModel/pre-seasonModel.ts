@@ -6,6 +6,11 @@ const PreSeasonSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  playerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Player',
+    required: true,
+  },
   fitnessScore: {
     type: Number,
     required: true,
