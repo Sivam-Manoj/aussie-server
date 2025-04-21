@@ -7,10 +7,11 @@ export const createJwtToken = (
   payload: {
     _id: string;
     email: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     isVerified: boolean;
-    isProfileDone: boolean;
+    isProfileDone?: boolean;
+    role?: string;
   }
 ) => {
   try {
