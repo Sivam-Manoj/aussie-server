@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { Express } from 'express';
+import mongoose from "mongoose";
+import { Express } from "express";
 
 export const appwithDB = async (app: Express) => {
   const port = process.env.PORT || 3000;
@@ -7,7 +7,7 @@ export const appwithDB = async (app: Express) => {
   const base_url = process.env.BASE_URL as string;
   try {
     await mongoose.connect(mongo_url);
-    console.log('database connected succesfully');
+    console.log("database connected succesfully");
     app.listen(port, () => {
       console.log(`Server running on:${base_url}:${port}`);
     });

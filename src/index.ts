@@ -55,6 +55,12 @@ app.use("/player", playerRoutes);
 // Here, we are defining the `/user` base route and telling Express to route all requests to `UserRoutes` file.
 app.use("/user", userRoutes);
 
+//season routes
+app.use("/in-season", inSeasonRoutes);
+app.use("/pre-season", preSeasonRoutes);
+app.use("/post-season", postSeasonRoutes);
+app.use("/off-season", offSeasonRoutes);
+
 // Use process.cwd() to get the absolute path to the root of the project
 const rootPath = process.cwd(); // This will point to the project root
 
@@ -76,10 +82,7 @@ app.get("*", (_req, res) => {
 // and handles them (like sending a proper error response back to the client).
 app.use(errorHandler);
 
-app.use('/in-season', inSeasonRoutes);
-app.use('/pre-season', preSeasonRoutes);
-app.use('/post-season', postSeasonRoutes);
-app.use('/off-season', offSeasonRoutes);
+
 // Connect app with the database
 // This function connects the app to the database. It's usually where you'd set up your database connection.
 // It's typically called after setting up routes and middlewares to ensure database is connected before handling any requests.

@@ -1,6 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import { createEmailHtml } from "../template/emailHtml.js";
-
+import { configDotenv } from "dotenv";
+configDotenv();
 // Twilio SendGrid API Key from environment variables
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 export const sendEmailVerification = async (

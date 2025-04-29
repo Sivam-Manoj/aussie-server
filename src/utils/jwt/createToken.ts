@@ -16,7 +16,7 @@ export const createJwtToken = (
   try {
     // Generate JWT access token (expires in 7 days)
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: "7d",
+      expiresIn: "21d",
     });
 
     // Generate a refresh token (expires in 30 days)
@@ -32,17 +32,17 @@ export const createJwtToken = (
     res.cookie("jwt", accessToken, {
       httpOnly: true, // Prevents XSS attacks
       secure: process.env.NODE_ENV == "production", // HTTPS only in production
-      domain: "aussierulespro.com",
+      //domain: "aussierulespro.com",
       path: "/",
-      sameSite: "none", 
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "none",
+      maxAge: 21 * 24 * 60 * 60 * 1000, // 21 days
     });
 
     // Set refresh token in HTTP-only cookie
     res.cookie("refreshJwt", refreshToken, {
       httpOnly: true, // Prevents XSS attacks
       secure: process.env.NODE_ENV == "production", // HTTPS only in production
-      domain: "aussierulespro.com",
+      //domain: "aussierulespro.com",
       path: "/",
       sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -50,6 +50,8 @@ export const createJwtToken = (
 
     return { accessToken, refreshToken }; // Optionally return the tokens
   } catch (error) {
+    console.error("Error creating JWT tokens:", error);
     throw error; // Handle this in the route
+
   }
 };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../middleware/asynchandler/asyncHandler.js";
 import User from "../../model/userModel/userModel.js";
-// import { sendSmsVerification } from "../../utils/twilio/twilioSMS.js";
+
 import { sendEmailVerification } from "../../utils/twilio/twilioEmail.js";
 import { generateVerificationCode } from "../../utils/verificationCode/generateVerificationCode.js";
 import { VERIFICATION_CODE_EXPIRATION } from "../../utils/verificationCode/verificationTime.js";
@@ -40,7 +40,6 @@ export const signupController = asyncHandler(
         phone,
         firstName,
         lastName,
-        isVerified: false, // User is not verified yet
         verificationCode, // Store the token in DB
         verificationCodeExpiresAt: Date.now() + VERIFICATION_CODE_EXPIRATION, // Set expiration time
       });
@@ -54,6 +53,43 @@ export const signupController = asyncHandler(
       });
     } catch (error) {
       return res.status(500).json({ message: "Error during registration" });
+    }
+  }
+);
+
+export const resendVerificationEmail = asyncHandler(
+  async (req: Request, res: Response): Promise<any> => {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "User already verified" });
+    }
+
+    const verificationCode = generateVerificationCode();
+
+    user.verificationCode = verificationCode;
+    user.verificationCodeExpiresAt = new Date(
+      Date.now() + VERIFICATION_CODE_EXPIRATION
+    );
+
+    try {
+      await user.save();
+      await sendEmailVerification(email, verificationCode);
+      return res.status(200).json({ message: "Verification email sent" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error sending verification email" });
     }
   }
 );

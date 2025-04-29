@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../model/userModel/userModel.js";
 import { createJwtToken } from "../../utils/jwt/createToken.js";
-import Player from "../../model/playerModel/playerModel.js";
+ 
 
 export const verifyController = async (
   req: Request,

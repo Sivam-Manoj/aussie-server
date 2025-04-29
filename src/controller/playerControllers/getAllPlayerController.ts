@@ -3,7 +3,7 @@ import { asyncHandler } from "../../middleware/asynchandler/asyncHandler.js";
 import Player from "../../model/playerModel/playerModel.js";
 
 export const getAllPlayers = asyncHandler(
-  async (_req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const players = await Player.find({ playerProfile: "Public" });
       res.status(200).json(players);

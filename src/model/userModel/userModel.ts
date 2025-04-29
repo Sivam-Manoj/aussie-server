@@ -13,7 +13,6 @@ interface IUser extends Document {
   verificationCode: string;
   verificationCodeExpiresAt: Date;
   isProfileDone: boolean;
-  isActive: boolean;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -25,11 +24,10 @@ const userSchema = new Schema<IUser>(
     phone: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true, minlength: 6 },
-    isVerified: { type: Boolean, default: false },
+    isVerified: { type: Boolean, required: false, default: false },
     verificationCode: { type: String, required: false },
     verificationCodeExpiresAt: { type: Date, required: false },
     isProfileDone: { type: Boolean, required: false, default: false },
-    isActive: { type: Boolean, required: true, default: true },
   },
   { timestamps: true }
 );
