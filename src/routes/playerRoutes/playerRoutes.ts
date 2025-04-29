@@ -4,32 +4,26 @@ import { getPlayerController } from "../../controller/playerControllers/getPlaye
 import { deletePlayerController } from "../../controller/playerControllers/deletePlayerController.js";
 import { updatePlayerController } from "../../controller/playerControllers/updatePlayerController.js";
 import { getOnePlayer } from "../../controller/playerControllers/getOneplayerController.js";
-import { authMiddleware } from "../../middleware/auth/authMiddleware.js";
 import { upload } from "../../utils/multer/multerStorage.js";
 import { getAllPlayers } from "../../controller/playerControllers/getAllPlayerController.js";
+import { protect } from "../../middleware/auth/authMiddleware.js";
 
 const router = Router();
-
 // Route for creating a player, with file upload and authentication middleware
-router.post(
-  "/create",
-  authMiddleware,
-  upload.single("file"),
-  createPlayerController
-);
+router.post("/create", protect, upload.single("file"), createPlayerController);
 
-// Route for getting all players (GET method should be used for data retrieval)
-router.post("/chat", authMiddleware, getPlayerController);
+// Route for getting all players
+router.get("/players", protect, getPlayerController);
 
 // Route for deleting a player
-router.post("/delete", authMiddleware, deletePlayerController);
+router.delete("/player", protect, deletePlayerController);
 
 // Route for updating a player
-router.put("/update", authMiddleware, updatePlayerController);
+router.put("/update", protect, updatePlayerController);
 
 // Route for getting a single player
-router.get("/me", authMiddleware, getOnePlayer);
+router.get("/me", protect, getOnePlayer);
 
-router.get("/all", authMiddleware, getAllPlayers);
+router.get("/all", protect, getAllPlayers);
 
 export default router;

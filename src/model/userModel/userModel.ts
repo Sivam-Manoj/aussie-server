@@ -10,6 +10,7 @@ interface IUser extends Document {
   email: string;
   password: string;
   isVerified: boolean;
+  isAdminVerified: boolean;
   verificationCode: string;
   verificationCodeExpiresAt: Date;
   isProfileDone: boolean;
@@ -24,7 +25,8 @@ const userSchema = new Schema<IUser>(
     phone: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true, minlength: 6 },
-    isVerified: { type: Boolean, required: false, default: false },
+    isVerified: { type: Boolean, default: false },
+    isAdminVerified: { type: Boolean, default: false },
     verificationCode: { type: String, required: false },
     verificationCodeExpiresAt: { type: Date, required: false },
     isProfileDone: { type: Boolean, required: false, default: false },

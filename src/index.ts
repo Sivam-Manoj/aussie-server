@@ -8,6 +8,7 @@ import errorHandler from "./middleware/error/ErrorHandler.js"; //import error ha
 //routes
 import playerRoutes from "./routes/playerRoutes/playerRoutes.js"; // player routes
 import userRoutes from "./routes/userRoutes/userRoutes.js"; //user routes
+import adminRoutes from "./routes/adminRoutes/adminRoutes.js"; // admin routes
 //verification routes
 import verifyRoutes from "./routes/verificationRoutes/userVerificationRoutes.js";
 import path from "path";
@@ -55,11 +56,9 @@ app.use("/player", playerRoutes);
 // Here, we are defining the `/user` base route and telling Express to route all requests to `UserRoutes` file.
 app.use("/user", userRoutes);
 
-//season routes
-app.use("/in-season", inSeasonRoutes);
-app.use("/pre-season", preSeasonRoutes);
-app.use("/post-season", postSeasonRoutes);
-app.use("/off-season", offSeasonRoutes);
+// Admin routes (API endpoints)
+// Here, we are defining the `/admin` base route and telling Express to route all requests to `adminRoutes` file.
+app.use("/admin", adminRoutes);
 
 // Use process.cwd() to get the absolute path to the root of the project
 const rootPath = process.cwd(); // This will point to the project root

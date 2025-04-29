@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../../model/userModel/userModel.js";
+import Admin from "../../model/adminModel/adminModel.js";
 import { createJwtToken } from "../../utils/jwt/createToken.js";
 
 export interface AuthRequest extends Request {
-  user?: { _id: string; email: string; isVerified: boolean };
+  user?: { _id: string; email: string; isVerified: boolean; role?: string };
 }
 
-export const authMiddleware = async (
+// Rename authMiddleware to protect for consistency
+export const protect = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -27,7 +29,20 @@ export const authMiddleware = async (
         _id: string;
         email: string;
         isVerified: boolean;
+        role?: string;
       };
+
+      // Check if user is admin
+      const admin = await Admin.findOne({ email: decoded.email });
+      if (admin) {
+        req.user = {
+          _id: admin._id.toString(),
+          email: admin.email,
+          isVerified: true,
+          role: admin.role,
+        };
+        return next();
+      }
 
       // Fetch user from database
       const user = await User.findOne({ email: decoded.email });
@@ -66,7 +81,27 @@ export const authMiddleware = async (
             _id: string;
             email: string;
             isVerified: boolean;
+            role?: string;
           };
+
+          // Check if user is admin
+          const admin = await Admin.findOne({ email: decodedRefresh.email });
+          if (admin) {
+            createJwtToken(res, {
+              _id: admin._id.toString(),
+              email: admin.email,
+              role: admin.role,
+              isVerified: true,
+            });
+
+            req.user = {
+              _id: admin._id.toString(),
+              email: admin.email,
+              isVerified: true,
+              role: admin.role,
+            };
+            return next();
+          }
 
           // Fetch user from database
           const user = await User.findOne({ email: decodedRefresh.email });
@@ -104,6 +139,32 @@ export const authMiddleware = async (
 
       return res.status(403).json({ message: "Forbidden: Invalid token" });
     }
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Admin middleware to check if user is admin
+export const admin = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized: No user found" });
+    }
+
+    const admin = await Admin.findOne({ email: req.user.email });
+    if (!admin) {
+      return res.status(403).json({ message: "Forbidden: Admin access required" });
+    }
+
+    if (!admin.isActive) {
+      return res.status(403).json({ message: "Forbidden: Admin account inactive" });
+    }
+
+    next();
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
