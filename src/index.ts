@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 // Enable Cross-Origin Resource Sharing (CORS)
 // CORS allows resources to be shared between different domains, which is important for APIs to be accessed from different origins.
 const corsOptions = {
-  origin: ["https://www.aussierulespro.com", "http://localhost:3000"], // specify allowed origins
+  origin: ["http://localhost:3302", "http://localhost:3000"], // specify allowed origins
   credentials: true, // allow credentials (cookies, authorization headers, etc.)
 };
 
@@ -59,6 +59,22 @@ app.use("/user", userRoutes);
 // Admin routes (API endpoints)
 // Here, we are defining the `/admin` base route and telling Express to route all requests to `adminRoutes` file.
 app.use("/admin", adminRoutes);
+
+// Pre-season routes (API endpoints)
+// Here, we are defining the `/pre-season` base route and telling Express to route all requests to `pre-seasonRoutes` file.
+app.use("/pre-season", preSeasonRoutes);
+
+// In-season routes (API endpoints)
+// Here, we are defining the `/in-season` base route and telling Express to route all requests to `in-seasonRoutes` file.
+app.use("/in-season", inSeasonRoutes);
+
+// Post-season routes (API endpoints)
+// Here, we are defining the `/post-season` base route and telling Express to route all requests to `post-seasonRoutes` file.
+app.use("/post-season", postSeasonRoutes);
+
+// Off-season routes (API endpoints)
+// Here, we are defining the `/off-season` base route and telling Express to route all requests to `off-seasonRoutes` file.
+app.use("/off-season", offSeasonRoutes);
 
 // Use process.cwd() to get the absolute path to the root of the project
 const rootPath = process.cwd(); // This will point to the project root
