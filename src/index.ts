@@ -76,6 +76,10 @@ app.use("/post-season", postSeasonRoutes);
 // Here, we are defining the `/off-season` base route and telling Express to route all requests to `off-seasonRoutes` file.
 app.use("/off-season", offSeasonRoutes);
 
+app.use("/api/calendar", inSeasonRoutes); // Calendar routes (API endpoints)
+app.use("/api/calendar", preSeasonRoutes); // Calendar routes (API endpoints)
+app.use("/api/calendar", postSeasonRoutes); // Calendar routes (API endpoints)
+app.use("/api/calendar", offSeasonRoutes); // Calendar routes (API endpoints)
 // Use process.cwd() to get the absolute path to the root of the project
 const rootPath = process.cwd(); // This will point to the project root
 
