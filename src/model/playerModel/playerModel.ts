@@ -1,195 +1,133 @@
 import mongoose, { Schema, model, Document } from "mongoose";
 
+// Define social media links interface
+interface ISocialMediaLinks {
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  whatsapp?: string;
+  [key: string]: string | undefined; // Allow dynamic properties
+}
+
 // Define an interface for TypeScript type safety
-interface IPlayer extends Document {
+export interface IPlayer extends Document {
   _id: string;
-  photo: string; // Image path
+  photo: string;
   fullName: string;
-  user?: mongoose.Types.ObjectId; // Add user field
+  user: mongoose.Types.ObjectId;
   nickname: string;
   email: string;
   mobilePhone: string;
-  dob: Date;
-  height: number; // cm or inches
-  weight: number; // kg or lbs
-  startedPlaying: Date;
-  preferredFoot: "Left" | "Right" | "Both";
-  preferredHandball: "Left" | "Right" | "Both";
-  preferredTap: "Left" | "Right" | "Both" | "Neither";
-  primaryPosition:
-    | "Forward"
-    | "Midfield"
-    | "Defender"
-    | "Ruck"
-    | "Utility"
-    | "Winger"
-    | "Tagger"
-    | "Bench"
-    | "Other";
-  secondaryPosition: IPlayer["primaryPosition"];
-  preferredPosition: IPlayer["primaryPosition"];
-  playingStyle:
-    | "Aggressive"
-    | "Strategic"
-    | "Balanced"
-    | "Defensive"
-    | "Attacking"
-    | "Playmaker"
-    | "Reactive"
-    | "Cautious"
-    | "Other";
+  dob: Date | null;
+  height: number | null;
+  weight: number | null;
+  startedPlaying: Date | null;
+  preferredFoot: "Left" | "Right" | "Both" | "";
+  preferredHandball: "Left" | "Right" | "Both" | "";
+  preferredTap: "Left" | "Right" | "Both" | "Neither" | "";
+  primaryPosition: string;
+  secondaryPosition: string;
+  preferredPosition: string;
+  playingStyle: string;
   currentClub: string;
   previousClubs: string[];
   yearsOfExperience: number;
   gamesPlayed: number;
   goalsKicked: number;
-  aspirations:
-    | "Social Player"
-    | "Club Player"
-    | "Professional"
-    | "Elite Athlete"
-    | "Fitness Aspect"
-    | "Personal Development"
-    | "Mental Activity"
-    | "Financial Requirement"
-    | "Other";
+  aspirations: string;
   achievements: string[];
   injuryHistory: string;
-  socialMediaLinks?: {
-    facebook?: string;
-    instagram?: string;
-    linkedin?: string;
-    whatsapp?: string;
-  };
+  socialMediaLinks: ISocialMediaLinks;
   playerProfile: "Public" | "Private";
   biography: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Define the Mongoose Schema
+const socialMediaSchema = new Schema<ISocialMediaLinks>({
+  facebook: { type: String, default: '' },
+  instagram: { type: String, default: '' },
+  linkedin: { type: String, default: '' },
+  whatsapp: { type: String, default: '' }
+}, { _id: false });
+
 const playerSchema = new Schema<IPlayer>(
   {
-    photo: { type: String, required: false },
-    fullName: { type: String, required: true },
-    user: { type: mongoose.Types.ObjectId, ref: "User" },
-    nickname: { type: String, required: false },
-    email: { type: String, required: true, unique: true },
-    mobilePhone: { type: String, required: true, unique: true },
-    dob: { type: Date, required: true },
-    height: { type: Number, required: true },
-    weight: { type: Number, required: true },
-    startedPlaying: { type: Date, required: true },
+    photo: { type: String, default: '' },
+    fullName: { type: String, required: [true, 'Full name is required'] },
+    user: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'User',
+      required: [true, 'User reference is required']
+    },
+    nickname: { type: String, default: '' },
+    email: { 
+      type: String, 
+      required: [true, 'Email is required'],
+      unique: true,
+      match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
+    },
+    mobilePhone: { 
+      type: String, 
+      default: '',
+      match: [/^[0-9\-\+\s()]*$/, 'Please enter a valid phone number']
+    },
+    dob: { type: Date },
+    height: { type: Number, min: 0 },
+    weight: { type: Number, min: 0 },
+    startedPlaying: { type: Date },
     preferredFoot: {
       type: String,
-      enum: ["Left", "Right", "Both"],
-      required: true,
+      enum: ['Left', 'Right', 'Both', ''],
+      default: ''
     },
     preferredHandball: {
       type: String,
-      enum: ["Left", "Right", "Both"],
-      required: true,
+      enum: ['Left', 'Right', 'Both', ''],
+      default: ''
     },
     preferredTap: {
       type: String,
-      enum: ["Left", "Right", "Both", "Neither"],
-      required: true,
+      enum: ['Left', 'Right', 'Both', 'Neither', ''],
+      default: ''
     },
-    primaryPosition: {
-      type: String,
-      enum: [
-        "Forward",
-        "Midfield",
-        "Defender",
-        "Ruck",
-        "Utility",
-        "Winger",
-        "Tagger",
-        "Bench",
-        "Other",
-      ],
-      required: true,
-    },
-    secondaryPosition: {
-      type: String,
-      enum: [
-        "Forward",
-        "Midfield",
-        "Defender",
-        "Ruck",
-        "Utility",
-        "Winger",
-        "Tagger",
-        "Bench",
-        "Other",
-      ],
-      required: true,
-    },
-    preferredPosition: {
-      type: String,
-      enum: [
-        "Forward",
-        "Midfield",
-        "Defender",
-        "Ruck",
-        "Utility",
-        "Winger",
-        "Tagger",
-        "Bench",
-        "Other",
-      ],
-      required: true,
-    },
-    playingStyle: {
-      type: String,
-      enum: [
-        "Aggressive",
-        "Strategic",
-        "Balanced",
-        "Defensive",
-        "Attacking",
-        "Playmaker",
-        "Reactive",
-        "Cautious",
-        "Other",
-      ],
-      required: true,
-    },
-    currentClub: { type: String, required: true },
-    previousClubs: { type: [String], required: false },
-    yearsOfExperience: { type: Number, required: true },
-    gamesPlayed: { type: Number, required: true },
-    goalsKicked: { type: Number, required: true },
-    aspirations: {
-      type: String,
-      enum: [
-        "Social Player",
-        "Club Player",
-        "Professional",
-        "Elite Athlete",
-        "Fitness Aspect",
-        "Personal Development",
-        "Mental Activity",
-        "Financial Requirement",
-        "Other",
-      ],
-      required: true,
-    },
-    achievements: { type: [String], required: false },
-    injuryHistory: { type: String, required: false },
-    socialMediaLinks: {
-      facebook: { type: String, required: false },
-      instagram: { type: String, required: false },
-      linkedin: { type: String, required: false },
-      whatsapp: { type: String, required: false },
-    },
+    primaryPosition: { type: String, default: '' },
+    secondaryPosition: { type: String, default: '' },
+    preferredPosition: { type: String, default: '' },
+    playingStyle: { type: String, default: '' },
+    currentClub: { type: String, default: '' },
+    previousClubs: { type: [String], default: [] },
+    yearsOfExperience: { type: Number, default: 0, min: 0 },
+    gamesPlayed: { type: Number, default: 0, min: 0 },
+    goalsKicked: { type: Number, default: 0, min: 0 },
+    aspirations: { type: String, default: '' },
+    achievements: { type: [String], default: [] },
+    injuryHistory: { type: String, default: '' },
+    socialMediaLinks: { type: socialMediaSchema, default: () => ({}) },
     playerProfile: {
       type: String,
-      enum: ["Public", "Private"],
-      required: true,
+      enum: ['Public', 'Private'],
+      default: 'Public'
     },
-    biography: { type: String, required: false },
+    biography: { type: String, default: '' },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
 );
+
+// Indexes for better query performance
+playerSchema.index({ user: 1 });
+playerSchema.index({ email: 1 }, { unique: true });
+
+// Update the updatedAt field before saving
+playerSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
 
 // Create and export the model
 const Player = model<IPlayer>("Player", playerSchema);
