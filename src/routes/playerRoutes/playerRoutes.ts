@@ -10,6 +10,7 @@ import {
   deletePlayerProfile,
   searchPlayers
 } from '../../controller/playerControllers/playerController.js';
+import { createPlayerController } from '../../controller/playerControllers/createPlayerController.js';
 
 const router = Router();
 
@@ -47,6 +48,44 @@ router.get(
  * @access  Public (but private profiles are protected)
  */
 router.get('/:id', optionalAuth, getPlayerById);
+
+// Public route for creating player profile (protected by auth)
+router.post(
+  '/',
+  protect,
+  [
+    body('fullName', 'Full name is required').notEmpty().trim(),
+    body('email', 'Please include a valid email').isEmail().normalizeEmail(),
+    body('mobilePhone', 'Please include a valid phone number')
+      .trim()
+      .isMobilePhone('any'),
+    body('dob', 'Please include a valid date of birth')
+      .isISO8601()
+      .toDate(),
+    body('height', 'Height must be a positive number')
+      .optional()
+      .isFloat({ min: 0 }),
+    body('weight', 'Weight must be a positive number')
+      .optional()
+      .isFloat({ min: 0 }),
+    body('playerProfile', 'Player profile must be either Public or Private')
+      .optional()
+      .isIn(['Public', 'Private']),
+    body('primaryPosition', 'Primary position is required')
+      .isString()
+      .trim(),
+    body('secondaryPosition', 'Secondary position must be a string')
+      .optional()
+      .isString()
+      .trim(),
+    body('biography', 'Biography must be a string')
+      .optional()
+      .isString()
+      .trim()
+      .isLength({ max: 2000 })
+  ],
+  asyncHandler(createPlayerController)
+);
 
 // Apply authentication middleware to protected routes
 router.use(protect);

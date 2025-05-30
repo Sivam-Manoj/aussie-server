@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 // Enable Cross-Origin Resource Sharing (CORS)
 // CORS allows resources to be shared between different domains, which is important for APIs to be accessed from different origins.
 const corsOptions = {
-  origin: ["http://localhost:3302", "http://localhost:3000"], // specify allowed origins
+  origin: ["http://localhost:3000"], // specify allowed origins
   credentials: true, // allow credentials (cookies, authorization headers, etc.)
 };
 
